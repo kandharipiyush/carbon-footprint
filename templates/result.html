@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Carbon Footprint Result</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="space">
+
+<div class="stars"></div>
+
+<!-- GLOBAL LOADING -->
+<div id="loadingOverlay">
+  <div class="box">
+    <div class="spinner"></div>
+    Processing…
+  </div>
+</div>
+
+<div class="container result">
+
+<img src="/static/earth.png" class="earth">
+
+<h2>{{ period }} Carbon Footprint</h2>
+<h1>{{ total }} kg CO₂</h1>
+<p class="timestamp">{{ timestamp }}</p>
+
+<h3 style="color:{{ score_color }};">{{ score }}</h3>
+<p><b>Eco Badge:</b> {{ badge }}</p>
+<p><b>Status:</b> {{ benchmark }}</p>
+
+<hr>
+
+<h3>📊 Emission Breakdown</h3>
+
+<div class="charts">
+  <canvas id="pieChart" width="260" height="260"
+    data-t="{{ transport }}"
+    data-e="{{ electricity }}"
+    data-f="{{ food }}">
+  </canvas>
+
+  <canvas id="barChart" width="320" height="220"></canvas>
+</div>
+
+<script>
+const pie=document.getElementById("pieChart");
+const t=Number(pie.dataset.t),
+      e=Number(pie.dataset.e),
+      f=Number(pie.dataset.f);
+const colors=['#4fc3f7','#81c784','#ffb74d'];
+
+new Chart(pie,{
+ type:'pie',
+ data:{labels:['Transport','Electricity','Food'],
+ datasets:[{data:[t,e,f],backgroundColor:colors}]},
+ options:{responsive:false,plugins:{legend:{position:'bottom'}}}
+});
+
+new Chart(document.getElementById("barChart"),{
+ type:'bar',
+ data:{labels:['Transport','Electricity','Food'],
+ datasets:[{label:'kg CO₂',data:[t,e,f],backgroundColor:colors}]},
+ options:{responsive:false,scales:{y:{beginAtZero:true}}}
+});
+</script>
+
+<hr>
+
+<h3>📈 Percentage Contribution</h3>
+<ul class="list">
+  <li>🚗 Transport: {{ transport_pct }}%</li>
+  <li>⚡ Electricity: {{ electricity_pct }}%</li>
+  <li>🍽 Food: {{ food_pct }}%</li>
+</ul>
+
+<p class="fact">💡 {{ fact }}</p>
+
+<hr>
+
+<h3>🎯 Actionable Reduction Plan</h3>
+<ul class="list">
+{% for a in action_plan %}
+  <li>{{ a }}</li>
+{% endfor %}
+</ul>
+
+<p><b>💰 Savings:</b> {{ co2_saved }} kg ≈ ₹{{ money_saved }}/month</p>
+<p><b>🌳 Trees to Offset:</b> {{ trees }} trees/year</p>
+<p><b>📉 Weekly Target:</b> {{ weekly_goal }} kg CO₂</p>
+
+<hr>
+
+<h3>🌍 Carbon Shadow</h3>
+<ul class="list">
+  <li>📆 1-Year Emissions: {{ yearly_emission }} kg CO₂</li>
+  <li>🌳 Trees Required: {{ trees_year }} trees/year</li>
+</ul>
+
+<hr>
+
+<h3>📊 Reduction Trend</h3>
+<p id="trendText"></p>
+
+<canvas id="trendChart" width="300" height="180"></canvas>
+
+<script>
+let history=JSON.parse(localStorage.getItem("carbonHistory"))||[];
+history.push({{ total }});
+if(history.length>6) history.shift();
+localStorage.setItem("carbonHistory",JSON.stringify(history));
+
+const trendText=document.getElementById("trendText");
+if(history.length>1){
+ let prev=history[history.length-2];
+ trendText.innerText =
+   {{ total }} < prev ? "⬇ Improving trend" :
+   {{ total }} > prev ? "⬆ Increasing trend" :
+   "➖ Stable";
+}else{
+ trendText.innerText="Tracking started";
+}
+
+new Chart(document.getElementById("trendChart"),{
+ type:'line',
+ data:{labels:history.map((_,i)=>"Attempt "+(i+1)),
+ datasets:[{data:history,borderColor:'#4fc3f7',
+ backgroundColor:'rgba(79,195,247,0.15)',fill:true}]},
+ options:{responsive:false,scales:{y:{beginAtZero:true}}}
+});
+</script>
+
+<div class="button-group">
+  <button onclick="confirmReset()" class="btn danger">Reset Trend</button>
+  <a href="/" onclick="showLoading()" class="btn secondary">← Recalculate</a>
+</div>
+
+<script>
+function showLoading(){
+  document.getElementById("loadingOverlay").style.display = "flex";
+}
+
+function confirmReset(){
+  const ok = confirm(
+    "⚠️ This will erase your carbon reduction history.\nDo you want to continue?"
+  );
+  if(ok){
+    showLoading();
+    localStorage.removeItem("carbonHistory");
+    setTimeout(()=>location.reload(),600);
+  }
+}
+</script>
+
+<p class="footer">
+Based on standard emission factors • ARCANE Hackathon
+</p>
+
+</div>
+</body>
+</html>
