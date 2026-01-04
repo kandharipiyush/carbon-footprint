@@ -4,6 +4,8 @@ this is arcane hackhaton project repositorie by ieee made in python flask for ba
 following is link of deployed website:-
 https://carbonfootprinttracking.pythonanywhere.com/
 
+caution :- the deployed website is for pc if you are using in phone then kindhly just zoom-out it will work properly 
+
 steps to run project
 step 1 :- create folder with name carbon-footprint and add app.py file and install flask with terminal 
 commond for installing flask :- pip install flask
