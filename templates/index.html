@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Carbon Footprint Tracker</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+
+<body class="space">
+
+<div class="stars"></div>
+
+<!-- GLOBAL LOADING -->
+<div id="loadingOverlay">
+  <div class="box">
+    <div class="spinner"></div>
+    Calculating your carbon impact…
+  </div>
+</div>
+
+<div class="container">
+
+<img src="/static/earth.png" class="earth">
+
+<h2>Carbon Footprint Tracking Platform 🌍</h2>
+
+<form action="/calculate" method="post" onsubmit="showLoading()">
+
+<label>Calculation Type</label>
+<select name="period" required>
+  <option value="daily">Daily</option>
+  <option value="monthly">Monthly</option>
+</select>
+
+<label>Transport Distance (km)</label>
+<input type="number" name="transport" min="0" max="200" required>
+
+<label>Electricity Usage (units)</label>
+<input type="number" name="electricity" min="0" max="50" required>
+
+<label>Food Habit</label>
+<select name="food" required>
+  <option value="veg">Vegetarian</option>
+  <option value="mixed">Mixed</option>
+  <option value="nonveg">Non-Vegetarian</option>
+</select>
+
+<button type="submit">🚀 Calculate Footprint</button>
+
+</form>
+
+</div>
+
+<script>
+function showLoading(){
+  document.getElementById("loadingOverlay").style.display = "flex";
+}
+</script>
+
+</body>
+</html>
